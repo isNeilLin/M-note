@@ -1,7 +1,7 @@
 <template>
   <div id="wrapper">
     <div class="layout-content">
-        <div class="col-4">
+        <div class="col-4" v-if="folderFocus">
             <folder-lists
               :data="folders"
               v-on:changeTitle="changeTitle"
@@ -12,7 +12,7 @@
               v-on:updateList="updateData"
             ></folder-lists>
         </div>
-        <div class="col-4">
+        <div class="col-4" v-if="fileFocus">
             <file-lists
               ref="file"
               v-on:exportHTML="exportHTML"
@@ -46,11 +46,14 @@
   import electron from 'electron'
   const fs = require('fs');
   const path = require('path');
-  const { remote } = electron;
+  const { remote, ipcRenderer } = electron;
   const { dialog, app } = remote;
   export default {
     name: 'landing-page',
     created(){
+        ipcRenderer.on('menuEvent',(event,data)=>{
+          this[data]();
+        })
         this.$folder.find({},(err,doc)=>{
             if(doc&&doc.length){
               this.folders = doc
@@ -91,7 +94,10 @@
           currentFolder: '',
           currentFile: '',
           files: [],
-          content: ''
+          content: '',
+          folderFocus: true,
+          fileFocus: true,
+          isPreview: false
       }
     },
     components: { folderLists, fileLists, markdownContent },
@@ -379,6 +385,237 @@
             message: message,
             detail: detail || ''
           })
+        },
+        blod(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+          cm.replaceSelection("**" + selection + "**");
+          if(selection === "") {
+              cm.setCursor(cursor.line, cursor.ch + 2);
+          }
+        },
+        underline(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+
+          cm.replaceSelection("_" + selection + "_");
+
+          if(selection === "") {
+              cm.setCursor(cursor.line, cursor.ch + 1);
+          }
+        },
+        deleteline(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+
+          cm.replaceSelection("~~" + selection + "~~");
+
+          if(selection === "") {
+              cm.setCursor(cursor.line, cursor.ch + 2);
+          }
+        },
+        h1(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+          if (cursor.ch !== 0)
+          {
+              cm.setCursor(cursor.line, 0);
+              cm.replaceSelection("# " + selection);
+              cm.setCursor(cursor.line, cursor.ch + 2);
+          }
+          else
+          {
+              cm.replaceSelection("# " + selection);
+          }
+        },
+        h2(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+          if (cursor.ch !== 0)
+          {
+              cm.setCursor(cursor.line, 0);
+              cm.replaceSelection("## " + selection);
+              cm.setCursor(cursor.line, cursor.ch + 3);
+          }
+          else
+          {
+              cm.replaceSelection("## " + selection);
+          }
+        },
+        h3(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+          if (cursor.ch !== 0)
+          {
+              cm.setCursor(cursor.line, 0);
+              cm.replaceSelection("### " + selection);
+              cm.setCursor(cursor.line, cursor.ch + 4);
+          }
+          else
+          {
+              cm.replaceSelection("### " + selection);
+          }
+        },
+        h4(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+
+          if (cursor.ch !== 0)
+          {
+              cm.setCursor(cursor.line, 0);
+              cm.replaceSelection("#### " + selection);
+              cm.setCursor(cursor.line, cursor.ch + 5);
+          }
+          else
+          {
+              cm.replaceSelection("#### " + selection);
+          }
+        },
+        h5(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+          if (cursor.ch !== 0)
+          {
+              cm.setCursor(cursor.line, 0);
+              cm.replaceSelection("##### " + selection);
+              cm.setCursor(cursor.line, cursor.ch + 6);
+          }
+          else
+          {
+              cm.replaceSelection("##### " + selection);
+          }
+        },
+        h6(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+          if (cursor.ch !== 0)
+          {
+              cm.setCursor(cursor.line, 0);
+              cm.replaceSelection("###### " + selection);
+              cm.setCursor(cursor.line, cursor.ch + 7);
+          }
+          else
+          {
+              cm.replaceSelection("###### " + selection);
+          }
+        },
+        comment(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+
+          cm.replaceSelection("<!--" + selection + "-->");
+
+          if(selection === "") {
+              cm.setCursor(cursor.line, cursor.ch + 4);
+          }
+        },
+        inlineCode(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+          cm.replaceSelection("`" + selection + "`");
+          if (selection === "") {
+              cm.setCursor(cursor.line, cursor.ch + 1);
+          }
+        },
+        blockCode(){
+          this.$refs.editor.editor.executePlugin("codeBlockDialog", "code-block-dialog/code-block-dialog");
+        },
+        ul(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+          if (selection === "") 
+          {
+              cm.replaceSelection("- " + selection);
+          } 
+          else 
+          {
+              var selectionText = selection.split("\n");
+              for (var i = 0, len = selectionText.length; i < len; i++) 
+              {
+                  selectionText[i] = (selectionText[i] === "") ? "" : "- " + selectionText[i];
+              }
+              cm.replaceSelection(selectionText.join("\n"));
+          }
+        },
+        ol(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+          if(selection === "") 
+          {
+              cm.replaceSelection("1. " + selection);
+          }
+          else
+          {
+              var selectionText = selection.split("\n");
+              for (var i = 0, len = selectionText.length; i < len; i++) 
+              {
+                  selectionText[i] = (selectionText[i] === "") ? "" : (i+1) + ". " + selectionText[i];
+              }
+              cm.replaceSelection(selectionText.join("\n"));
+          }
+        },
+        quote(){
+          var cm        = this.$refs.editor.editor.cm;
+          var cursor    = cm.getCursor();
+          var selection = cm.getSelection();
+
+          if (cursor.ch !== 0)
+          {
+              cm.setCursor(cursor.line, 0);
+              cm.replaceSelection("> " + selection);
+              cm.setCursor(cursor.line, cursor.ch + 2);
+          }
+          else
+          {
+              cm.replaceSelection("> " + selection);
+          }
+        },
+        link(){
+          this.$refs.editor.editor.executePlugin("linkDialog", "link-dialog/link-dialog");
+        },
+        image(){
+          this.$refs.editor.editor.executePlugin("imageDialog", "image-dialog/image-dialog");
+        },
+        table(){
+          this.$refs.editor.editor.executePlugin("tableDialog", "table-dialog/table-dialog");
+        },
+        preview(){
+          this.isPreview = !this.isPreview;
+          let previewElm = this.$refs.editor.editor.preview[0];
+          if(this.isPreview){
+            previewElm.style.display = 'block'
+          }else{
+            previewElm.style.display = 'none'
+          }
+        },
+        editorMode(){
+          this.folderFocus = false;
+          this.fileFocus = false;
+        },
+        listMode(){
+          this.folderFocus = false;
+          this.fileFocus = true;
+        },
+        normalMode(){
+          this.folderFocus = true;
+          this.fileFocus = true
+        },
+        previewMode(){
+          let main = this.$refs.editor;
+          main.watch = !main.watch;
         }
     }
   }

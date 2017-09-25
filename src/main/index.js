@@ -34,6 +34,40 @@ function createWindow () {
 function initMenu(mainWindow){
   let template = [
       {
+        label: 'M-note',
+        submenu: [
+          {
+            label: '关于M-note',
+            role: 'about'
+          },
+          {type: 'separator'},
+          {
+            label: '服务',
+            role: 'services'
+          },
+          {type: 'separator'},
+          {
+            label: '隐藏',
+            accelerator: 'CommandOrControl+H',
+            role: 'hide'
+          },
+          {
+            label: '显示',
+            accelerator: 'CommandOrControl+Shift+H',
+            click: function(){
+              mainWindow.show()
+            }
+          },
+          {
+            label: '退出应用',
+            accelerator: 'CommandOrControl+Q',
+            click: function(){
+              app.quit()
+            }
+          }
+        ]
+      },
+      {
           label: '编辑',
           submenu: [
               {role: 'undo', accelerator: 'CommandOrControl+Z', label: '撤销'},
@@ -51,43 +85,91 @@ function initMenu(mainWindow){
             label: '加粗',
             accelerator: 'CommandOrControl+B',
             click: function(){
-              ipcMain.send('menuEvent','blod')
+              mainWindow.webContents.send('menuEvent','blod')
             }
           },
           {
             label: '下划线',
-            accelerator: 'CommandOrControl+Shift+U',
+            accelerator: 'CommandOrControl+Alt+U',
             click: function(){
-              ipcMain.send('menuEvent','underline')
+              mainWindow.webContents.send('menuEvent','underline')
             }
           },
           {
             label: '删除线',
             accelerator: 'CommandOrControl+-',
             click: function(){
-              ipcMain.send('menuEvent','deleteline')
+              mainWindow.webContents.send('menuEvent','deleteline')
             }
+          },
+          {type: 'separator'},
+          {
+            label: '转为',
+            submenu: [
+              {
+                label: 'H1',
+                accelerator: 'CommandOrControl+Alt+1',
+                click: function(){
+                  mainWindow.webContents.send('menuEvent','h1')
+                }
+              },
+              {
+                label: 'H2',
+                accelerator: 'CommandOrControl+Alt+2',
+                click: function(){
+                  mainWindow.webContents.send('menuEvent','h2')
+                }
+              },
+              {
+                label: 'H3',
+                accelerator: 'CommandOrControl+Alt+3',
+                click: function(){
+                  mainWindow.webContents.send('menuEvent','h3')
+                }
+              },
+              {
+                label: 'H4',
+                accelerator: 'CommandOrControl+Alt+4',
+                click: function(){
+                  mainWindow.webContents.send('menuEvent','h4')
+                }
+              },
+              {
+                label: 'H5',
+                accelerator: 'CommandOrControl+Alt+5',
+                click: function(){
+                  mainWindow.webContents.send('menuEvent','h5')
+                }
+              },
+              {
+                label: 'H6',
+                accelerator: 'CommandOrControl+Alt+6',
+                click: function(){
+                  mainWindow.webContents.send('menuEvent','h6')
+                }
+              }
+            ]
           },
           {type: 'separator'},
           {
             label: '注释',
             accelerator: 'CommandOrControl+/',
             click: function(){
-              ipcMain.send('menuEvent','comment')
+              mainWindow.webContents.send('menuEvent','comment')
             }
           },
           {
             label: '行内代码',
             accelerator: 'CommandOrControl+K',
             click: function(){
-              ipcMain.send('menuEvent','inlineCode')
+              mainWindow.webContents.send('menuEvent','inlineCode')
             }
           },
           {
             label: '代码块',
             accelerator: 'CommandOrControl+Shift+K',
             click: function(){
-              ipcMain.send('menuEvent','blockCode')
+              mainWindow.webContents.send('menuEvent','blockCode')
             }
           },
           {type: 'separator'},
@@ -95,41 +177,41 @@ function initMenu(mainWindow){
             label: '无序列表',
             accelerator: 'CommandOrControl+U',
             click: function(){
-              ipcMain.send('menuEvent','ul')
+              mainWindow.webContents.send('menuEvent','ul')
             }
           },
           {
             label: '有序列表',
             accelerator: 'CommandOrControl+O',
             click: function(){
-              ipcMain.send('menuEvent','ol')
+              mainWindow.webContents.send('menuEvent','ol')
             }
           },
           {
             label: '引用',
             accelerator: 'CommandOrControl+Shift+B',
             click: function(){
-              ipcMain.send('menuEvent','quote')
+              mainWindow.webContents.send('menuEvent','quote')
             }
           },
           {
             label: '链接',
             accelerator: 'CommandOrControl+L',
             click: function(){
-              ipcMain.send('menuEvent','link')
+              mainWindow.webContents.send('menuEvent','link')
             }
           },
           {
             label: '图片',
             accelerator: 'CommandOrControl+I',
             click: function(){
-              ipcMain.send('menuEvent','image')
+              mainWindow.webContents.send('menuEvent','image')
             }
           },{
             label: '表格',
             accelerator: 'CommandOrControl+T',
             click: function(){
-              ipcMain.send('menuEvent','table')
+              mainWindow.webContents.send('menuEvent','table')
             }
           }
         ]
@@ -138,37 +220,38 @@ function initMenu(mainWindow){
         submenu: [
           {
             label: '预览/取消预览',
-            accelerator: 'CommandOrControl+R',
+            accelerator: 'CommandOrControl+P',
             click: function(){
-              ipcMain.send('menuEvent','preview')
+              mainWindow.webContents.send('menuEvent','preview')
             }
           },
+          {type: 'separator'},
           {
             label: '仅显示编辑器',
             accelerator: 'CommandOrControl+1',
             click: function(){
-              ipcMain.send('menuEvent','oneMode')
+              mainWindow.webContents.send('menuEvent','editorMode')
             }
           },
           {
             label: '双栏视图模式',
             accelerator: 'CommandOrControl+2',
             click: function(){
-              ipcMain.send('menuEvent','twoMode')
+              mainWindow.webContents.send('menuEvent','listMode')
             }
           },
           {
             label: '三栏视图模式',
             accelerator: 'CommandOrControl+3',
             click: function(){
-              ipcMain.send('menuEvent','threeMode')
+              mainWindow.webContents.send('menuEvent','normalMode')
             }
           },
           {
             label: '切换实时预览',
             accelerator: 'CommandOrControl+W',
             click: function(){
-              ipcMain.send('menuEvent','fourMode')
+              mainWindow.webContents.send('menuEvent','previewMode')
             }
           }
         ]
@@ -203,13 +286,6 @@ function initMenu(mainWindow){
               mainWindow.unmaximize()
               mainWindow.setFullScreen(false)
             }
-          },
-          {
-            label: '退出',
-            accelerator: 'CommandOrControl+Q',
-            click: function(){
-              app.quit()
-            }
           }
         ]
       },
@@ -224,7 +300,7 @@ function initMenu(mainWindow){
           },{
             label: 'BUG反馈',
             click: function(){
-              shell.openExternal()
+              shell.openExternal('https://github.com/isNeilLin/M-note/issues/new')
             }
           },
         ]

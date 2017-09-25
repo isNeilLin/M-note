@@ -9,6 +9,7 @@
         </div>
         <div class="disableEditor" v-if="disable">
         </div>
+        <div class="watch" v-if="watch" ref="watch"></div>
     </div>
 </template>
 <script>
@@ -27,6 +28,7 @@
                 fileTitle: this.data.title,
                 preview: '',
                 editorPath: '/static/',
+                watch: false,
                 editorConfig: {
                     width: '100%',
                     height: '100%',
@@ -58,6 +60,7 @@
                         let content = this.editor.getMarkdown();
                         let fileTitle = content.split(/\n/)[0];
                         this.fileTitle = fileTitle.replace('#','');
+                        this.editor.preview[0].style.display = 'none';
                     },
                 }
             }
@@ -69,6 +72,7 @@
                     title = document.title + '*';
                     document.title = title;
                 }
+                this.$refs.watch.innerHTML = this.editor.preview[0].innerHTML;
                 if(((e.metaKey||e.ctrlKey)&&e.keyCode===83)||e.keyCode===13){
                     this.saveContent();
                 }
@@ -113,12 +117,19 @@
     .container {
         height: 100%;
         position: relative;
+        display: flex;
     }
     .markdown_editor {
         height: 100%;
         outline: none;
-        /* padding: 36px; */
         overflow-y: auto;
+        width: auto;
+        flex-grow: 1;
+    }
+    .watch {
+        min-width: 50%;
+        max-width: 50%;
+        overflow-y: auto
     }
     .disableEditor {
         position: absolute;
@@ -161,8 +172,8 @@
     pre .cm-link {
         color: rgb(29, 117, 179) !important;
     }
-    .editormd-preview {
-        display: none !important;
+    .container .editormd-preview {
+        display: none;
         height: 100%;
         position: absolute;
         top: 0;
@@ -180,6 +191,7 @@
     }
     .CodeMirror pre{
         white-space: pre-wrap !important;
+        word-break: break-word !important;
     }
     .CodeMirror-foldgutter {
         background: rgba(250,235,215,.4) !important;
@@ -194,5 +206,8 @@
         width: 100% !important;
         min-width: 100% !important;
         padding-left: 8px;
+    }
+    .editormd-preview-close-btn {
+        display: none !important;
     }
 </style>

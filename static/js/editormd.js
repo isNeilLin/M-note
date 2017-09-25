@@ -3228,7 +3228,8 @@
                 cm.setCursor(cursor.line, cursor.ch + 1);
             }
         },
-        "Ctrl-U"         : "list-ul",
+        // "Ctrl-U"         : "list-ul",
+        // "Command-U"         : "list-ul",
         
         "Shift-Ctrl-A"   : function() {
             var cm        = this.cm;

@@ -13,7 +13,7 @@
 
 	var factory = function (exports) {
 
-		var $            = jQuery;
+		var $            = require('jquery');
 		var pluginName   = "table-dialog";
 
 		var langs = {
@@ -84,8 +84,8 @@
 				"<label>" + dialogLang.cellsLabel + "</label>",
 				dialogLang.rows + " <input type=\"number\" value=\"3\" class=\"number-input\" style=\"width:40px;\" max=\"100\" min=\"2\" data-rows />&nbsp;&nbsp;",
 				dialogLang.cols + " <input type=\"number\" value=\"2\" class=\"number-input\" style=\"width:40px;\" max=\"100\" min=\"1\" data-cols /><br/>",
-				"<label>" + dialogLang.alignLabel + "</label>",
-				"<div class=\"fa-btns\"></div>",
+				// "<label>" + dialogLang.alignLabel + "</label>",
+				// "<div class=\"fa-btns\"></div>",
 				"</div>"
 			].join("\n");
 
@@ -103,7 +103,7 @@
 					name       : dialogName,
 					title      : dialogLang.title,
 					width      : 360,
-					height     : 226,
+					height     : 206,
 					mask       : settings.dialogShowMask,
 					drag       : settings.dialogDraggable,
 					content    : dialogContent,

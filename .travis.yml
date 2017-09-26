@@ -11,6 +11,7 @@ matrix:
 cache:
   directories:
   - node_modules
+  - app/node_modules
   - "$HOME/.electron"
   - "$HOME/.cache"
 addons:
@@ -24,13 +25,17 @@ before_install:
   | tar -xz -C /tmp/git-lfs --strip-components 1 && /tmp/git-lfs/git-lfs pull
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --no-install-recommends -y icnsutils graphicsmagick xz-utils; fi
 install:
-- nvm install 7
-- curl -o- -L https://yarnpkg.com/install.sh | bash
-- source ~/.bashrc
-- npm install -g xvfb-maybe
-- yarn
+- nvm install 6
+- npm install electron-builder@next
+- npm install
+- npm prune
+- cd app
+- npm install
+- cd ..
 script:
-- yarn run build
+- npm run rebuild
+- npm run dist
 branches:
   only:
   - master
+  - release

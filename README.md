@@ -1,4 +1,5 @@
 # m-note
+![](https://travis-ci.org/isNeilLin/M-note.svg?branch=master)
 
 > 一个基于 electron-vue 的Markdown编辑器
 

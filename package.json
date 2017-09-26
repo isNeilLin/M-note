@@ -41,7 +41,7 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/mnote.icns"
+      "icon": "build/icons/icon.icns"
     },
     "win": {
       "icon": "build/icons/icon.ico"
@@ -51,6 +51,7 @@
     }
   },
   "dependencies": {
+    "async": "^2.5.0",
     "axios": "^0.16.1",
     "eve": "^0.5.4",
     "html-pdf": "^2.1.0",

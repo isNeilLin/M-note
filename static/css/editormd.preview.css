@@ -20,7 +20,7 @@
  * -------------------------- */
 @font-face {
   font-family: 'FontAwesome';
-  src: url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/fonts/fontawesome-webfont.eot");
+  src: url("static/fonts/fontawesome-webfont.eot");
   font-weight: normal;
   font-style: normal;
 }

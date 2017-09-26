@@ -9,7 +9,7 @@
         </div>
         <div class="disableEditor" v-if="disable">
         </div>
-        <div class="watch" v-if="watch" ref="watch"></div>
+        <div class="watch" v-if="watch" ref="watch" v-html="previewContent"></div>
     </div>
 </template>
 <script>
@@ -29,6 +29,7 @@
                 preview: '',
                 editorPath: '/static/',
                 watch: false,
+                previewContent: '',
                 editorConfig: {
                     width: '100%',
                     height: '100%',
@@ -72,7 +73,9 @@
                     title = document.title + '*';
                     document.title = title;
                 }
-                this.$refs.watch.innerHTML = this.editor.preview[0].innerHTML;
+                if(this.watch){
+                    this.previewContent = this.editor.preview[0].innerHTML;
+                }
                 if(((e.metaKey||e.ctrlKey)&&e.keyCode===83)||e.keyCode===13){
                     this.saveContent();
                 }

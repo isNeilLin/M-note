@@ -1,7 +1,7 @@
 <template>
   <div id="wrapper">
     <div class="layout-content">
-        <div class="col-4" v-if="folderFocus">
+        <div class="col-4" v-show="folderFocus">
             <folder-lists
               :data="folders"
               v-on:changeTitle="changeTitle"
@@ -12,7 +12,7 @@
               v-on:updateList="updateData"
             ></folder-lists>
         </div>
-        <div class="col-4" v-if="fileFocus">
+        <div class="col-4" v-show="fileFocus">
             <file-lists
               ref="file"
               v-on:exportHTML="exportHTML"
@@ -616,6 +616,7 @@
         previewMode(){
           let main = this.$refs.editor;
           main.watch = !main.watch;
+          this.$refs.editor.previewContent = this.$refs.editor.editor.preview[0].innerHTML
         }
     }
   }
@@ -653,7 +654,7 @@
  }
  .col-16 {
    flex-grow: 1;
-   overflow: auto;
+   overflow: hidden;
  }
  .col-4 {
    height: 100%;

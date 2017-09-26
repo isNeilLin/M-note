@@ -2,7 +2,7 @@
   "name": "m-note",
   "version": "1.0.0",
   "author": "Lin Pengfei <1264766856@qq.com>",
-  "description": "An electron-vue project",
+  "description": "一个基于electron的Markdown编辑器",
   "license": null,
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -41,7 +41,7 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/icon.icns"
+      "icon": "build/icons/mnote.icns"
     },
     "win": {
       "icon": "build/icons/icon.ico"

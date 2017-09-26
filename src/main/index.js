@@ -24,7 +24,7 @@ function createWindow () {
   })
   initMenu(mainWindow)
   mainWindow.loadURL(winURL)
-
+  mainWindow.openDevTools()
   mainWindow.on('closed', () => {
     mainWindow = null
   })

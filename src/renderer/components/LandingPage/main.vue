@@ -27,7 +27,7 @@
                 editor: null,
                 fileTitle: this.data.title,
                 preview: '',
-                editorPath: '/static/',
+                editorPath: 'static/',
                 watch: false,
                 previewContent: '',
                 editorConfig: {
@@ -35,7 +35,7 @@
                     height: '100%',
                     mode: 'markdown',
                     name: 'markdown_editor',
-                    path: '/static/js/',
+                    path: 'static/js/',
                     codeFold: false,
                     saveHTMLToTextarea: false,
                     searchReplace: true,
@@ -46,7 +46,7 @@
                     lineWrapping:false,
                     fontSize: '14px',
                     taskList: true,
-                    pluginPath: '/static/plugins/',
+                    pluginPath: 'static/plugins/',
                     toc: true,
                     tocm: true,                  // Using [TOCM]
                     tex: true,                   // 开启科学公式TeX语言支持，默认关闭

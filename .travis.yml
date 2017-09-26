@@ -33,8 +33,8 @@ install:
 - npm install
 - cd ..
 script:
-- npm run rebuild
-- npm run dist
+- npm run pack
+- npm run build
 branches:
   only:
   - master

@@ -111,7 +111,17 @@
             }
           },(err,num)=>{
             if(!err){
-              this.updateData();
+              this.$file.update({
+                belongTo: data.old
+              },{
+                $set: {
+                  belongTo: data.new
+                }
+              },{
+                multi: true
+              },(err)=>{
+                this.updateData();
+              })
             }
           })
         },

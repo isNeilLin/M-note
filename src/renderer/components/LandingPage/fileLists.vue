@@ -16,6 +16,7 @@
 </template>
 <script>
     import electron from 'electron'
+    import Evernote from 'evernote'
     const { remote } = electron;
     const { Menu, MenuItem, dialog } = remote;
     export default {
@@ -87,6 +88,9 @@
                             label: '导出为Markdown',
                             click: _this.exportMarkdown
                         },{
+                            label: '发布到印象笔记',
+                            click: _this.toEvernote
+                        },{
                             type: 'separator'
                         },{
                             label: '移到废纸篓',
@@ -95,6 +99,10 @@
                     ]
                 }
                 this.createMenu(menuData);
+            },
+            toEvernote(){
+            //    window.open('https://sandbox.evernote.com/')
+               window.open('https://sandbox.evernote.com/api/DeveloperToken.action')
             },
             createMenu(data){
                 this.fileMenu = new Menu();

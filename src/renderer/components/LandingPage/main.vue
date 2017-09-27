@@ -41,15 +41,15 @@
                     searchReplace: true,
                     htmlDecode: 'style,script,iframe|on*',
                     emoji: true,
-                    pageBreak: false,
+                    pageBreak: true,
                     lineNumbers:false,
-                    lineWrapping:false,
+                    lineWrapping:true,
                     fontSize: '14px',
                     taskList: true,
                     pluginPath: 'static/plugins/',
                     toc: true,
-                    tocm: true,                  // Using [TOCM]
-                    tex: true,                   // 开启科学公式TeX语言支持，默认关闭
+                    tocm: true,                   // Using [TOCM]
+                    tex: true,                    // 开启科学公式TeX语言支持，默认关闭
                     flowChart: false,             // 开启流程图支持，默认关闭
                     sequenceDiagram: false,       // 开启时序/序列图支持，默认关闭,
                     imageUpload: true,
@@ -62,7 +62,7 @@
                         let fileTitle = content.split(/\n/)[0];
                         this.fileTitle = fileTitle.replace('#','');
                         this.editor.preview[0].style.display = 'none';
-                    },
+                    }
                 }
             }
         },
@@ -79,14 +79,6 @@
                 if(((e.metaKey||e.ctrlKey)&&e.keyCode===83)||e.keyCode===13){
                     this.saveContent();
                 }
-            },
-            rangeToLast(el){
-                let sel = window.getSelection();
-                let range = document.createRange();
-                range.selectNodeContents(el);
-                range.collapse();
-                sel.removeAllRanges();
-                sel.addRange(range);
             },
             initEditor() {
                 this.editor = editormd('markdown_editor', this.editorConfig);
@@ -110,7 +102,6 @@
             showContent(content){
                 this.editor.setValue(content);
                 this.$refs.editor.focus();
-                this.rangeToLast(this.$refs.editor);
             }
         },
         props: ["data"]
@@ -125,7 +116,7 @@
     .markdown_editor {
         height: 100%;
         outline: none;
-        overflow-y: auto;
+        /* overflow-y: auto; */
         width: auto;
         flex-grow: 1;
     }
@@ -168,10 +159,6 @@
     .cm-header-6 {
         font-size: 14px;
     }
-    pre {
-        white-space: pre-wrap;
-        word-break: break-all;
-    }
     pre .cm-link {
         color: rgb(29, 117, 179) !important;
     }
@@ -179,7 +166,7 @@
         display: none;
         height: 100%;
         position: absolute;
-        top: 0;
+        bottom: 0;
         left: 0;
         z-index: 999;
         width: 100% !important;
@@ -190,11 +177,7 @@
     .CodeMirror {
         background: rgba(250,235,215,.5) !important;
         width: 100% !important;
-        padding-top: 16px;
-    }
-    .CodeMirror pre{
-        white-space: pre-wrap !important;
-        word-break: break-word !important;
+        padding: 16px 0;
     }
     .CodeMirror-foldgutter {
         background: rgba(250,235,215,.4) !important;

@@ -616,7 +616,12 @@
         previewMode(){
           let main = this.$refs.editor;
           main.watch = !main.watch;
-          this.$refs.editor.previewContent = this.$refs.editor.editor.preview[0].innerHTML
+          if(main.watch){
+            this.$refs.editor.previewContent = this.$refs.editor.editor.preview[0].innerHTML
+            this.$nextTick(function(){
+              main.editor.bindPreviewScrollEvent(main.$refs.watch)
+            })
+          }
         }
     }
   }

@@ -18,12 +18,12 @@
  */
 /* FONT PATH
  * -------------------------- */
-@font-face {
+/* @font-face {
   font-family: 'FontAwesome';
-  src: url("static/fonts/fontawesome-webfont.eot");
+  src: url("static/fonts/fontawesome-webfont.eot") url("static/fonts/fontawesome-webfont.svg") url("static/fonts/fontawesome-webfont.woff") url("static/fonts/fontawesome-webfont.ttf");
   font-weight: normal;
   font-style: normal;
-}
+} */
 .fa {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;

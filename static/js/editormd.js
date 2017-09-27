@@ -1658,10 +1658,15 @@
          * @returns {editormd} return this
          */
         
-        bindScrollEvent : function() {
+        bindPreviewScrollEvent : function(preview) {
             
             var _this            = this;
-            var preview          = this.preview;
+            if(preview){
+                preview = $(preview)
+                console.log(preview)
+            }else{
+                preview = _this.preview
+            }
             var settings         = this.settings;
             var codeMirror       = this.codeMirror;
             var mouseOrTouch     = editormd.mouseOrTouch;
@@ -1713,7 +1718,7 @@
                     var scrollTop = $(this).scrollTop();         
                     var percent   = (scrollTop / $(this)[0].scrollHeight);
                     var codeView  = codeMirror.find(".CodeMirror-scroll");
-
+                    console.log(scrollTop)
                     if(scrollTop === 0) 
                     {
                         codeView.scrollTop(0);
@@ -1818,7 +1823,7 @@
                 _this.resize();
             });
             
-            this.bindScrollEvent().bindChangeEvent();
+            this.bindPreviewScrollEvent().bindChangeEvent();
             
             if (!recreate)
             {

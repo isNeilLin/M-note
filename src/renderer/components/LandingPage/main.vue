@@ -100,6 +100,10 @@
                 }, 200);
             },
             showContent(content){
+                if(!this.editor){
+                    window.reload();
+                    return
+                }
                 this.editor.setValue(content);
                 this.$refs.editor.focus();
             }

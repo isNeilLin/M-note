@@ -20,15 +20,18 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     height: 563,
     useContentSize: true,
+    show: false,
     width: 1000
   })
   initMenu(mainWindow)
   mainWindow.loadURL(winURL)
   // mainWindow.openDevTools()
+  mainWindow.on('ready-to-show',() => {
+    mainWindow.show();
+  })
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  
 }
 
 function initMenu(mainWindow){

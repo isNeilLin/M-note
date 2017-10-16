@@ -1,6 +1,6 @@
 {
   "name": "mnote",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Lin Pengfei <1264766856@qq.com>",
   "description": "一个基于electron的Markdown编辑器",
   "license": null,
@@ -26,6 +26,8 @@
       "dist/electron/**/*"
     ],
     "dmg": {
+      "icon": "build/icons/icon.icns",
+      "backgroundColor": "#556689",
       "contents": [
         {
           "x": 410,

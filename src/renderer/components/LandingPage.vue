@@ -51,6 +51,7 @@
   export default {
     name: 'landing-page',
     created(){
+        remote.getCurrentWindow().openDevTools()
         ipcRenderer.on('menuEvent',(event,data)=>{
           this[data]();
         })

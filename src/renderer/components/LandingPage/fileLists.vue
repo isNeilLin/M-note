@@ -185,14 +185,12 @@
 </script>
 <style>
     .fileLists {
-        background: rgba(250,235,215,.4);
+        background: #f6f6f6;
         height: 100%;
-        padding:8px 0px 0px 0px;
     }
     .fileLists li {
-        background: floralwhite;
-        margin: 8px 0px;
-        padding: 6px;
+        background: #f8f8f8;
+        padding: 10px 6px;
     }
     p.fileTitle {
         color: rgb(51,51,51);
@@ -200,13 +198,14 @@
         line-height: 24px;
     }
     .fileDesc {
-        font-size: 10px;
+        font-size: 11px;
+        line-height: 18px;
     }
     .fileDesc span {
-        color: #3174ec;
+        color: #a53737;
     }
     .fileLists li.active {
-        background: antiquewhite;
+        background: #fff;
     }
     .active .fileTitle {
         color: #1976d2;

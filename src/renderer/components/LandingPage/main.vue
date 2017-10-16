@@ -179,15 +179,12 @@
         word-break: break-all;
     }
     .CodeMirror {
-        background: rgba(250,235,215,.5) !important;
+        background: #f9f9f9 !important;
         width: 100% !important;
         padding: 16px 0;
     }
     .CodeMirror-foldgutter {
-        background: rgba(250,235,215,.4) !important;
-    }
-    .CodeMirror-activeline-background {
-        background: rgb(243,222,200) !important;
+        background: #f9f9f9 !important;
     }
     .CodeMirror-sizer{
         padding-right: 16px !important;
@@ -197,7 +194,24 @@
         min-width: 100% !important;
         padding-left: 8px;
     }
+    .CodeMirror .CodeMirror-activeline .CodeMirror-activeline-background{
+        box-shadow: 1px 2px 3px -2px #222;
+        background-image: linear-gradient(to bottom, #f2f2f2, #f5f5f5);
+    }
+    .editormd .CodeMirror pre {
+        font-size: 15px !important;
+        line-height: 30px !important;
+    }
     .editormd-preview-close-btn {
         display: none !important;
+    }
+    .editormd .cm-tab {
+        background: none !important;
+    }
+    .cm-quote {
+        color: #008477 !important;
+    }
+    .cm-s-default .cm-string {
+        color: #c33d13 !important;
     }
 </style>

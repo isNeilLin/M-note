@@ -25,7 +25,6 @@ function createWindow () {
   })
   initMenu(mainWindow)
   mainWindow.loadURL(winURL)
-  // mainWindow.openDevTools()
   mainWindow.on('ready-to-show',() => {
     mainWindow.show();
   })
@@ -273,6 +272,11 @@ function initMenu(mainWindow){
             click: function(){
               mainWindow.maximize()
             }
+          },
+          {
+            label: '切换开发者工具',
+            accelerator: 'CommandOrControl+Option+I',
+            role: 'toggledevtools'
           },
           {
             label: '全屏',

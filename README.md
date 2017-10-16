@@ -3,17 +3,24 @@
 
 > 一个基于 electron-vue 的Markdown编辑器
 
-#### Build Setup
+#### 构建步骤
 
 ``` bash
-# install dependencies
-npm install
 
-# serve with hot reload at localhost:9080
+# 下载源码
+git clone git@github.com:isNeilLin/M-note.git
+
+# 安装依赖
+npm install
+# or
+yarn
+
+# 开发环境
 npm run dev
 
-# build electron application for production
-npm run build
+# 生产环境打包
+1、npm run pack
+2、npm run build
 
 
 ```

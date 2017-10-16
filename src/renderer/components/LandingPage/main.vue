@@ -214,4 +214,7 @@
     .cm-s-default .cm-string {
         color: #c33d13 !important;
     }
+    .cm-matchhighlight {
+        background: none !important;
+    }
 </style>

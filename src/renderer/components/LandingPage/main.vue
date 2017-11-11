@@ -120,9 +120,9 @@
     .markdown_editor {
         height: 100%;
         outline: none;
-        /* overflow-y: auto; */
         width: auto;
         flex-grow: 1;
+        letter-spacing: 0.5px;
     }
     .watch {
         min-width: 50%;
@@ -195,8 +195,7 @@
         padding-left: 8px;
     }
     .CodeMirror .CodeMirror-activeline .CodeMirror-activeline-background{
-        box-shadow: 1px 2px 3px -2px #222;
-        background-image: linear-gradient(to bottom, #f2f2f2, #f5f5f5);
+        background:none;
     }
     .editormd .CodeMirror pre {
         font-size: 15px !important;

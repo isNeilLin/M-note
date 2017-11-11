@@ -55,7 +55,7 @@
   "dependencies": {
     "async": "^2.5.0",
     "axios": "^0.16.1",
-    "electron-updater": "^2.10.0",
+    "electron-updater": "^2.16.1",
     "eve": "^0.5.4",
     "evernote": "^2.0.1-beta",
     "html-pdf": "^2.1.0",

@@ -17,7 +17,6 @@
     export default {
         mounted(){
             $script(`${this.editorPath}js/editormd.js`, () => {
-                console.log('init Editor')
                 this.initEditor();
             });
         },

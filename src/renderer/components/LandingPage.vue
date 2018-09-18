@@ -7,22 +7,22 @@
               v-on:changeTitle="changeTitle"
               v-on:addTitle="addTitle"
               v-on:deleteFolder="deleteFolder"
-              v-on:addFile="addFile"
+              v-on:addFile="addFileEvent"
               v-on:checkoutFolder="checkoutFolder"
-              v-on:updateList="updateData"
             ></folder-lists>
         </div>
         <div class="col-4" v-show="fileFocus">
             <file-lists
               ref="file"
+              :showDeleted="showDeleted"
               v-on:exportHTML="exportHTML"
               v-on:exportPDF="exportPDF"
               v-on:exportMarkdown="exportMarkdown"
               v-on:checkoutFolder="checkoutFolder"
-              v-on:updateList="updateData"
+              v-on:deleteFile="deleteFile"
               v-on:checkoutFile="checkoutFile"
-              v-on:addFile="addFile"
-              :data="files"
+              v-on:addFile="addFileEvent"
+              :data="curList"
             ></file-lists>
         </div>
         <div class="col-16">
@@ -31,6 +31,7 @@
               v-on:changeFileTitle="changeFileTitle"
               v-on:saveContent="saveContent"
               :data="content"
+              :curFile="curFile"
             ></markdown-content>
         </div>
     </div>
@@ -44,6 +45,7 @@
   import toHtml from './htmlGenerator.js'
   import pdf from 'html-pdf'
   import electron from 'electron'
+  import { mapState, mapMutations, mapGetters } from 'vuex';
   const fs = require('fs');
   const path = require('path');
   const { remote, ipcRenderer } = electron;
@@ -54,283 +56,250 @@
         ipcRenderer.on('menuEvent',(event,data)=>{
           this[data]();
         })
-        this.$folder.find({},(err,doc)=>{
-            if(doc&&doc.length){
-              this.folders = doc
-            }else if(doc){
-              let defaultDoc = {
-                title: '未分类文档',
-                selected: false
-              }
-              this.$folder.insert(defaultDoc,(err,newdoc)=>{
-                this.folders = newdoc;
-              })
-            }
-        })
     },
     mounted(){
-      this.$folder.find({
-        selected: true
-      },(err,doc)=>{
-        if(!err&&doc.length){
-          this.currentFolder = doc[0];
-          this.$file.find({
-            belongTo: this.currentFolder.title,
-            selected: true
-          },(err,doc)=>{
-            if(!err&&doc.length){
-              this.currentFile= doc[0];
-              this.content = this.currentFile.content;
-              this.$refs.editor.showContent(this.content);
-              this.updateData();
-            }
-          })
-        }
-      })
+      this.init();
     },
     data(){
       return {
-          folders: null,
-          currentFolder: '',
-          currentFile: '',
-          files: [],
-          content: '',
           folderFocus: true,
           fileFocus: true,
-          isPreview: false
+          isPreview: false,
+          showDeleted: false,
       }
     },
     components: { folderLists, fileLists, markdownContent },
+    computed: {
+      ...mapState([
+        'allDocs',
+        'recentDocs',
+        'wastebasket',
+        'folders',
+        'curList',
+        'curFolder',
+        'curFile',]),
+      ...mapGetters(['content'])
+    },
     methods: {
-        changeTitle(data){
-          this.$folder.update({
-            title: data.old
-          },{
-            $set: {
-              title: data.new
-            }
-          },(err,num)=>{
-            if(!err){
-              this.$file.update({
-                belongTo: data.old
-              },{
-                $set: {
-                  belongTo: data.new
+        ...mapMutations(['setAllDocs',
+          'setRecentDocs',
+          'setWastebasket',
+          'setFolders',
+          'setCurList',
+          'setCurrentFolder',
+          'setCurrentFile',
+          'addFolder',
+          'addFile',
+          'removeFolder',
+          'removeFile',
+          'updateFolder']),
+        init(){
+          // this.$db.remove({},{multi: true})
+          this.$db.find({},(err, doc)=>{
+            if(!err&&doc.length){
+              let currentFolder = doc.filter(d=>d.selected)[0] || null;
+              let files = doc.reduce(function(prev,next){
+                prev.concat(next.files);
+              },[])
+              this.setFolders(doc);
+              this.setCurrentFolder(currentFolder);
+              if(files&&files.length){
+                let all = files.filter(file=>!file.deleted);
+                let deleted = files.filter(file=>file.deleted);
+                let recents = all.sort(function(a, b){
+                  return b.update - a.update;
+                })
+                this.setAllDocs(all);
+                this.setRecentDocs(recents);
+                this.setWastebasket(deleted);
+              }
+            }else{
+              let defaults = [
+                {
+                  title: '所有文档',
+                  selected: false,
+                  files: []
+                },
+                {
+                  title: '最近使用',
+                  selected: false,
+                  files: []
+                },
+                {
+                  title: '废纸篓',
+                  selected: false,
+                  files: []
+                },
+                {
+                  title: '未分类文档',
+                  selected: true,
+                  files: []
                 }
-              },{
-                multi: true
-              },(err)=>{
-                this.updateData();
+              ]
+              this.$db.insert(defaults,(err,newdoc)=>{
+                this.setFolders(newdoc);
+                this.setCurrentFolder(newdoc[3]);
               })
             }
+          })
+        },
+        changeTitle(data){
+          let folder;
+          this.$db.find({
+            title: data.old
+          },(err, doc)=>{
+            if(err) return
+            folder = doc[0];
+            this.$db.update({
+              title: data.old
+            },{
+              $set: {
+                title: data.new
+              }
+            },()=>{
+              folder.title = data.new;
+              this.updateFolder(folder);
+            })
           })
         },
         checkoutFolder(folder){
-          if(typeof folder==='string'){
-            if(folder==='allDocuments'){
-              this.$file.find({
-                deleted: false
-              },(err,docs)=>{
-                if(!err){
-                  for(let item of docs){
-                    item.selected = false;
-                  }
-                  docs[0].selected = true;
-                  this.files = docs;
-                  this.checkFileListIsEmpty();
-                }
-              })
-            }else if(folder==='recently'){
-              this.$file.find({
-                deleted: false
-              }).sort({
-                update: -1
-              }).limit(7).exec((err,docs)=>{
-                if(!err){
-                  for(let item of docs){
-                    item.selected = false;
-                  }
-                  docs[0].selected = true;
-                  this.files = docs;
-                  this.checkFileListIsEmpty();
-                }
-              })
-            }else{
-              this.$file.find({
-                deleted: true
-              },(err,docs)=>{
-                for(let item of docs){
-                  item.selected = false;
-                }
-                docs[0].selected = true;
-                this.files = docs.map(item=>{
-                   item.deleted = false;
-                   item.wastebasket = true;
-                   return item;
-                })
-                this.checkFileListIsEmpty()
-              })
-            }
-          }else{
-            this.currentFolder = folder;
-            this.$folder.update({},{
-              $set: {
-                selected: false
-              }
-            },{
-              multi: true
-            },(err)=>{
-              if(!err){
-                this.$folder.update({
-                  _id: folder._id
-                },{
-                  $set: {
-                    selected: true
-                  }
-                },(err)=>{
-                  !err && this.updateData();
-                })
-              }
-            })
-          }
+          let c = this.$refs.editor.editor.getMarkdown();
+          this.saveContent(c);
+          this.showDeleted = false;
+          this.setCurrentFolder(folder);
         },
         checkoutFile(file){
-          this.currentFile = file;
-          this.$file.update({
-            belongTo: file.belongTo
+          let c = this.$refs.editor.editor.getMarkdown();
+          this.saveContent(c);
+          if(this.curFolder){
+            this.curFolder.files = this.curFolder.files.map(f=>{
+              if(f._id==file._id){
+                f.selected = true;
+              }else{
+                f.selected = false;
+              }
+              return f;
+            })
+            this.$db.update({
+              _id: this.curFolder._id
+            },{
+              files: this.curFolder.files
+            },()=>{
+              this.updateFolder(this.curFolder);
+              this.$refs.editor.editor.setValue(file.content);
+              this.$refs.editor.editor.focus();
+            })
+          }else{
+            let curList = this.curList.map(f=>{
+              if(f._id==file._id){
+                f.selected = true;
+              }else{
+                f.selected = false;
+              }
+              return f;
+            })
+            this.setCurList(curList);
+            this.$refs.editor.showContent();
+          }
+        },
+        deleteFile(file){
+          this.curFolder.files = this.curFolder.files.map(f=>{
+            if(f._id==file._id){
+              f.deleted = true;
+            }
+            return f;
+          });
+          this.$db.update({
+            _id: file._id
           },{
             $set: {
-              selected: false
+              files: this.curFolder.files
             }
-          },{
-            multi: true
-          },(err,num)=>{
-            if(!err){
-              this.$file.update({
-                _id: file._id
-              },{
-                $set: {
-                  selected: true
-                }
-              },(err)=>{
-                !err && this.updateData();
-                this.content = file.content;
-                this.$refs.editor.editor.setValue(file.content);
-                this.$refs.editor.editor.focus();
-              })
-            }
-          })
-        },
-        updateData(){
-          this.$folder.find({}).sort({
-            create: 1
-          }).exec((err,doc)=>{
-            if(!err){
-              this.folders = doc;
-            }
-          })
-          let currentFolder = this.currentFolder.title;
-          this.$file.find({
-            belongTo: currentFolder
-          }).sort({
-            create: 1
-          }).exec((err,doc)=>{
-            if(!err){
-              this.files = doc;
-              this.checkFileListIsEmpty();
-            }
+          },()=>{
+            this.updateFolder(this.curFolder);
           })
         },
         addTitle(data){
-          this.$folder.insert(data,(err,newdoc)=>{
-            !err &&this.updateData();
+          this.$db.insert(data,(err,newdoc)=>{
+            this.addFolder(newdoc);
           })
         },
-        addFile(data){
+        addFileEvent(data){
+          let c = this.$refs.editor.editor.getMarkdown();
+          this.saveContent(c);
           let create = Date.now();
           let update = create;
           let content = '';
+          let folder = this.folders.filter(folder=>folder.title==data.folder)[0];
+          folder.files = folder.files.map(file=>{
+            file.selected=false;
+            return file;
+          });
           let newFile = {
-            title: data.title,
-            belongTo: data.belongTo,
+            _id: create.toString(),
+            title: data.title || '未命名',
             create: data.create || create,
             update: data.update || update,
             content: data.content || content,
             selected: data.selected || true,
             deleted: false
           }
-          this.$file.update({
-            belongTo: data.belongTo
+          folder.files.push(newFile);
+          this.$db.update({
+            _id: folder._id
           },{
             $set: {
-              selected: false
+              files: folder.files
             }
           },(err)=>{
-            if(!err){
-              this.$file.insert(newFile,(err,newdoc)=>{
-                !err && this.updateData()
-              })
-            }
+            if(err) return this.alert(JSON.stringify(err));
+            this.updateFolder(folder);
           })
         },
         deleteFolder(name){
-          this.$folder.remove({
+          this.$db.find({
             title: name
-          },{},(err,num)=>{
-              !err && this.updateData()
-          })
-        },
-        checkFileListIsEmpty(){
-          if(!this.files.length){
-            document.title = 'm-note';
-            this.$refs.editor.disable = true;
-          }else{
-            for(let item of this.files){
-              if(item.selected){
-                this.currentFile = item;
-              }
-            }
-            document.title = this.currentFile.title;
-            this.$refs.editor.disable = false;
-            this.$file.find({
-              belongTo: this.currentFolder.title,
-              selected: true
-            },(err,docs)=>{
-              this.currentFile = docs[0];
-              this.$refs.editor.showContent(this.currentFile.content);
-            })
-          }
+          },(err, doc)=>{
+            this.$db.remove({title: name});
+            this.removeFolder(doc[0]);
+          });
         },
         saveContent(content){
           let now = Date.now();
-          now = this.$refs.file.timeFormat(now);
-          this.$file.update({
-            _id: this.currentFile._id
+          this.curFolder.files = this.curFolder.files.map(f=>{
+            if(f._id==this.curFile._id){
+              f.content = content;
+            }
+            return f;
+          })
+          this.$db.update({
+            _id: this.curFolder._id
           },{
             $set: {
-              content: content,
+              files: this.curFolder.files,
               update: now
             }
           },(err)=>{
             if(!err){
-              console.log(content);
+              this.updateFolder(this.curFolder);
             }
           })
         },
         changeFileTitle(name){
-          if(this.currentFile.title){
-            return
-          }
-          this.$file.update({
-            _id: this.currentFile._id
+          this.curFolder.files = this.curFolder.files.map(f=>{
+            if(f._id==this.curFile._id){
+              f.title = name;
+            }
+            return f;
+          })
+          this.$db.update({
+            _id: this.curFolder._id,
           },{
             $set: {
-              title: name
+              files: this.curFolder.files
             }
           },(err)=>{
-            if(!err){
-              this.updateData();
-            }
+            this.updateFolder(this.curFolder);
           })
         },
         exportHTML(){
@@ -633,6 +602,13 @@
             })
           }
         }
+    },
+    watch: {
+      curFile: function(data){
+        if(data){
+          this.$refs.editor.showContent(data.content);
+        }
+      }
     }
   }
 </script>

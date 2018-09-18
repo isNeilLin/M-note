@@ -1,32 +1,33 @@
 <template>
     <div class="folder-wrapper">
-        <ul>
+        <ul v-if="data.length">
             <li class="folder-item all-documents" 
                 :class="allDocuments.selected ? 'folder-item-active' : ''" 
-                @click="selectItem('allDocuments',$event)" 
+                @click="selectItem(data[0],$event)" 
                 >
                 <i class="icon"></i>
-                <span>所有文档</span>
+                <span>{{data[0].title}}</span>
             </li>
             <li class="folder-item recently" 
                 :class="recently.selected ? 'folder-item-active' : ''" 
-                @click="selectItem('recently',$event)" 
+                @click="selectItem(data[1],$event)" 
                 >
                 <i class="icon"></i>
-                <span>最近使用</span>
+                <span>{{data[1].title}}</span>
             </li>
             <li class="folder-item wastebasket" 
                 :class="wastebasket.selected ? 'folder-item-active' : ''" 
-                @click="selectItem('wastebasket',$event)"
+                @click="selectItem(data[2],$event)"
                 >
                 <i class="icon"></i>
-                <span>废纸篓</span>
+                <span>{{data[2].title}}</span>
             </li>
-            <li v-for="item in data" 
+            <li v-for="item in data.slice(3)" 
                 class="folder-item editable" 
-                :class="item.selected  ? 'folder-item-active' : ''" 
+                :class="item.selected&&folderActive  ? 'folder-item-active' : ''" 
                 @contextmenu="mouseDown"
-                @click="selectItem(item,$event)">
+                @click="selectItem(item,$event)"
+                :key="item.title">
                 <i class="icon"></i>
                 <span>{{item.title}}</span>
             </li>
@@ -47,6 +48,7 @@
     export default {
         data: ()=>{
             return {
+                folderActive: true,
                 folderMenu: null,
                 menuTarget: null,
                 input: {
@@ -68,6 +70,9 @@
                 }
             }
         },
+        mounted(){
+            console.log(this.data);
+        },
         props: ['data'],
         methods: {
             selectItem(e){
@@ -75,25 +80,16 @@
                 this.changeAcitve(folder);
             },
             changeAcitve(folder){
+                this.folderActive = false;
                 this.allDocuments.selected = false;
                 this.recently.selected = false;
                 this.wastebasket.selected = false;
                 if(typeof folder==='string'){
                     let name = folder;
                     this[name].selected = true;
-                    this.$folder.update({},{
-                        $set: {
-                            selected: false
-                        }
-                    },{
-                        multi: true
-                    },(err)=>{
-                        if(!err){
-                            this.$emit('updateList');
-                            this.$emit('checkoutFolder',folder)
-                        }
-                    })
+                    this.$emit('checkoutFolder',folder)
                 }else{
+                    this.folderActive = true;
                     this.$emit('checkoutFolder',folder)
                 }
             },
@@ -156,7 +152,8 @@
                 }else if(this.input.type==='add'){
                     this.$emit('addTitle',{
                         title: name,
-                        selected: false
+                        selected: false,
+                        files: []
                     })
                 }
                 this.cancel();
@@ -184,10 +181,9 @@
                 }
             },
             addFile(){
-                let belongTo = this.menuTarget.innerText.trim();
+                let folder = this.menuTarget.innerText.trim();
                 this.$emit('addFile',{
-                    title: '',
-                    belongTo: belongTo
+                    folder
                 })
             },
             importFile(){

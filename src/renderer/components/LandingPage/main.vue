@@ -5,9 +5,9 @@
         ref="editor"
         @paste="saveContent"
         @keydown="keyUp">
-            <textarea v-model="data.content"></textarea>
+            <textarea v-model="data"></textarea>
         </div>
-        <div class="disableEditor" v-if="disable">
+        <div class="disableEditor" v-if="!curFile">
         </div>
         <div class="watch" v-if="watch" ref="watch" v-html="previewContent"></div>
     </div>
@@ -87,6 +87,7 @@
                 let _this = this;
                 setTimeout(function() {
                     let content = _this.editor.getMarkdown();
+                    console.log(content);
                     _this.$emit('saveContent',content);
                     let fileTitle = content.split(/\n/)[0];
                     fileTitle = fileTitle.replace('#','');
@@ -103,11 +104,11 @@
                     window.reload();
                     return
                 }
-                this.editor.setValue(content);
+                this.editor.setValue(content||'');
                 this.$refs.editor.focus();
             }
         },
-        props: ["data"]
+        props: ["data","curFile"]
     }
 </script>
 <style>
@@ -122,6 +123,9 @@
         width: auto;
         flex-grow: 1;
         letter-spacing: 0.5px;
+    }
+    .CodeMirror div.CodeMirror-cursor {
+        border-left: 2px solid rgb(7, 119, 197) !important;
     }
     .watch {
         min-width: 50%;
@@ -197,8 +201,9 @@
         background:none;
     }
     .editormd .CodeMirror pre {
-        font-size: 15px !important;
+        font-size: 18px !important;
         line-height: 30px !important;
+        letter-spacing: 0.05em;
     }
     .editormd-preview-close-btn {
         display: none !important;

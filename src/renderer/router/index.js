@@ -11,6 +11,11 @@ export default new Router({
       component: require('@/components/LandingPage')
     },
     {
+      path: '/oauth_callback',
+      name: 'oauth_callback',
+      component: require('@/components/oauth_callback').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

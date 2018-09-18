@@ -5,6 +5,8 @@ import nedb from 'nedb'
 import App from './App'
 import router from './router'
 import store from './store'
+import Win from 'electron-vue-windows'
+Win.init()
 
 const remote = electron.remote;
 const app = remote.app;
@@ -16,6 +18,7 @@ const db = new nedb({
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
+Vue.prototype.$Win = Win
 Vue.prototype.$db = db
 Vue.config.productionTip = false
 

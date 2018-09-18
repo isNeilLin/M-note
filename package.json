@@ -1,6 +1,6 @@
 {
   "name": "mnote",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "author": "Lin Pengfei <1264766856@qq.com>",
   "description": "一个基于electron的Markdown编辑器",
   "license": "MIT",
@@ -56,8 +56,9 @@
     "async": "^2.5.0",
     "axios": "^0.16.1",
     "electron-updater": "^2.16.1",
+    "electron-vue-windows": "^1.0.22",
     "eve": "^0.5.4",
-    "evernote": "^2.0.1-beta",
+    "evernote": "^2.0.5",
     "html-pdf": "^2.1.0",
     "jquery": "^3.2.1",
     "nedb": "^1.8.0",

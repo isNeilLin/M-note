@@ -95,11 +95,15 @@
           'updateFolder']),
         init(){
           // this.$db.remove({},{multi: true})
-          this.$db.find({},(err, doc)=>{
+          this.$db.find({}).sort({
+            created: 1
+          }).exec((err, doc)=>{
             if(!err&&doc.length){
+              console.log(doc);
               let currentFolder = doc.filter(d=>d.selected)[0] || null;
-              let files = doc.reduce(function(prev,next){
-                prev.concat(next.files);
+              let files = [];
+              doc.map(function(f){
+                files.concat(f.files);
               },[])
               this.setFolders(doc);
               this.setCurrentFolder(currentFolder);
@@ -118,21 +122,25 @@
                 {
                   title: '所有文档',
                   selected: false,
+                  created: 0,
                   files: []
                 },
                 {
                   title: '最近使用',
                   selected: false,
+                  created: 1,
                   files: []
                 },
                 {
                   title: '废纸篓',
                   selected: false,
+                  created: 2,
                   files: []
                 },
                 {
                   title: '未分类文档',
                   selected: true,
+                  created: Date.now(),
                   files: []
                 }
               ]

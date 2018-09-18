@@ -20,13 +20,16 @@
     import Evernote from 'evernote'
     const { remote } = electron;
     const { Menu, MenuItem, dialog } = remote;
+    const callbackUrl = "http://localhost:9080/oauth_callback";
     var client = new Evernote.Client({
         consumerKey: 'neillin',
         consumerSecret: '079c9ef6fd5872aa',
         sandbox: true, // change to false when you are ready to switch to production
         china: false,
     })
-    const callbackUrl = "http://localhost:9080/oauth_callback";
+    /* var client = new Evernote.Client({
+        token: 'S=s1:U=940be:E=16d4351ea0f:C=165eba0bac0:P=1cd:A=en-devtoken:V=2:H=285af0989510d481c52f01dc46b327e9'
+    }) */
     export default {
         data(){
             return {
@@ -100,39 +103,16 @@
                 this.createMenu(menuData);
             },
             toEvernote(){
-                client.getRequestToken(callbackUrl, function(error, oauthToken, oauthTokenSecret) {
-                    if (error) {
-                        // do your error handling here
+                let _this = this;
+                client.getRequestToken(callbackUrl, function(error, oauthToken, oauthTokenSecret, confirm) {
+                    if(error){
+                        return alert(error.data);
                     }
                     localStorage.setItem('oauthToken',oauthToken)
                     localStorage.setItem('oauthTokenSecret',oauthTokenSecret)
-                    // location.href = client.getAuthorizeUrl(oauthToken); // send the user to Evernote
-                    /* var client = new Evernote.Client({
-                        consumerKey: 'neillin',
-                        consumerSecret: '079c9ef6fd5872aa',
-                        sandbox: true, // change to false when you are ready to switch to production
-                        china: false,
-                    });
-                    client.getAccessToken(localStorage.getItem('oauthToken'),
-                    localStorage.getItem('oauthTokenSecret'),
-                    req.query.oauth_verifier,
-                    function(error, oauthToken, oauthTokenSecret, results) {
-                        if (error) {
-                            // do your error handling
-                        } else {
-                            // oauthAccessToken is the token you need;
-                            var authenticatedClient = new Evernote.Client({
-                                token: localStorage.getItem('oauthToken'),
-                                sandbox: true,
-                                china: false,
-                            });
-                            var noteStore = authenticatedClient.getNoteStore();
-                            console.log(noteStore);
-                            noteStore.listNotebooks().then(function(notebooks) {
-                                console.log(notebooks); // the user's notebooks!
-                            });
-                        }
-                    }); */
+                    if(confirm.oauth_callback_confirmed){
+                        window.open(client.getAuthorizeUrl(oauthToken));
+                    } 
                 });
             },
             createMenu(data){
@@ -168,17 +148,6 @@
             deleteFile(){
                 console.log(this.menuTarget)
                 this.$emit('deleteFile', this.menuTarget);
-                /* this.$file.update({
-                    _id: this.menuTarget._id
-                },{
-                    $set: {
-                        deleted: true
-                    }
-                },(err)=>{
-                    if(!err){
-                        this.$emit('updateList')
-                    }
-                }) */
             },
             reback(){
                 this.$file.update({
